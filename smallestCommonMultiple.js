@@ -6,7 +6,7 @@ function range (stop, step = x => x + 1, current = 1, list = []) {
     }
     return list
   } else {
-    return range(stop, step, current + 1, list.concat(step(list, current)))
+    return range(stop, step, current + 1, list.concat([step(list, current)]))
   }
 }
 
@@ -22,15 +22,18 @@ function nextPrime (primes = []) {
   return _nextPrime(primes)
 }
 
-console.log({ prime: nextPrime([]) })
-console.log({ range: range(20, nextPrime) })
+function inc (_, x) {
+  return x + 1
+}
 
 function listPrimes (val) {
-  return []
+  return range(val, nextPrime)
 }
 
 function smallestCommons (arr) {
-  console.log({ arr, primes: listPrimes(23) })
+  const [min, max] = arr.sort((a, b) => a - b)
+  const rangePrimes = range(max, inc, min).map(listPrimes)
+  console.log({ min, max, rangePrimes })
   return arr
 }
 
