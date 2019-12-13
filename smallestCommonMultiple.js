@@ -1,4 +1,4 @@
-function range (stop, step = x => x + 1, current = 1, list = []) {
+function range (stop, step = (_, x) => x + 1, current = 1, list = []) {
   if ((list[list.length - 1] || 1) > stop) {
     const last = list[list.length - 1]
     if (last > stop) {
@@ -29,10 +29,11 @@ function inc (_, x) {
 function listPrimes (val) {
   return range(val, nextPrime)
 }
-
+ 
 function smallestCommons (arr) {
   const [min, max] = arr.sort((a, b) => a - b)
-  const rangePrimes = range(max, inc, min).map(listPrimes)
+  const rangePrimes = range(max, inc, min)
+    .map(x => [x, listPrimes(x)]) // ?
   console.log({ min, max, rangePrimes })
   return arr
 }
