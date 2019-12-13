@@ -1,13 +1,47 @@
-function range (stop, step = (_, x) => x + 1, current = 1, list = []) {
-  if ((list[list.length - 1] || 1) > stop) {
-    const last = list[list.length - 1]
-    if (last > stop) {
-      list.pop()
+function smallestCommons (arr) {
+  const [min, max] = arr.sort((a, b) => a - b)
+  const range_ = range(max, inc, min)
+  const listPrimes_ = range_.map(x => [x, listPrimes(x)])
+  const primeFactors_ = listPrimes_.map(([x, primes]) => primeFactors(x, primes)[1])
+  console.log(range_, primeFactors_)
+
+  return arr
+}
+
+smallestCommons([1, 5])
+// console.assert(smallestCommons([5, 1]) === 60)
+// console.assert(smallestCommons([2, 10]) === 2520)
+// console.assert(smallestCommons([1, 13]) === 360360)
+// console.assert(smallestCommons([23, 18]) === 6056820)
+
+function primeFactors (val = 1, primes = []) {
+  return primes.reduce(([rest, factors], currPrime) => {
+    if (rest % currPrime === 0) {
+      return exhaustCurrPrime(rest, currPrime, factors)
     }
-    return list
-  } else {
-    return range(stop, step, current + 1, list.concat([step(list, current)]))
+    return [rest, factors]
+  }, [val, []])
+
+  // 24, 2, [] => [1, [2, 2, 2, 3]]
+  function exhaustCurrPrime (rest, currPrime, factors) {
+    let newRest = rest
+    let newFactors = factors
+    while (newRest % currPrime === 0) {
+      newRest = newRest / currPrime
+      newFactors = newFactors.concat([currPrime])
+    }
+    return [newRest, newFactors]
   }
+}
+
+console.log(primeFactors(12, [2, 3, 5, 7, 9, 11]))
+
+function listPrimes (val) {
+  return range(val, nextPrime)
+}
+
+function inc (_, x) {
+  return x + 1
 }
 
 function nextPrime (primes = []) {
@@ -22,25 +56,14 @@ function nextPrime (primes = []) {
   return _nextPrime(primes)
 }
 
-function inc (_, x) {
-  return x + 1
+function range (stop, step = (_, x) => x + 1, current = 1, list = []) {
+  if ((list[list.length - 1] || 1) > stop) {
+    const last = list[list.length - 1]
+    if (last > stop) {
+      list.pop()
+    }
+    return list
+  } else {
+    return range(stop, step, current + 1, list.concat([step(list, current)]))
+  }
 }
-
-function listPrimes (val) {
-  return range(val, nextPrime)
-}
- 
-function smallestCommons (arr) {
-  const [min, max] = arr.sort((a, b) => a - b)
-  const rangePrimes = range(max, inc, min)
-    .map(x => [x, listPrimes(x)]) // ?
-  console.log({ min, max, rangePrimes })
-  return arr
-}
-
-smallestCommons([1, 5])
-
-// console.assert(smallestCommons([5, 1]) === 60)
-// console.assert(smallestCommons([2, 10]) === 2520)
-// console.assert(smallestCommons([1, 13]) === 360360)
-// console.assert(smallestCommons([23, 18]) === 6056820)
