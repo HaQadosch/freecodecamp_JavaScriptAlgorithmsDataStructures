@@ -1,18 +1,42 @@
 function smallestCommons (arr) {
   const [min, max] = arr.sort((a, b) => a - b)
-  const range_ = range(max, inc, min)
+  const range_ = range(max, inc, min, [min])
   const listPrimes_ = range_.map(x => [x, listPrimes(x)])
   const primeFactors_ = listPrimes_.map(([x, primes]) => primeFactors(x, primes)[1])
-  console.log(range_, primeFactors_)
 
-  return arr
+  let lcms = []
+  let clean = primeFactors_.slice()
+
+  while (clean.length > 0) {
+    const factors = clean.shift()
+    ;[clean, lcms] = removeFirstInstances(factors, clean, lcms)
+  }
+
+  return lcms.reduce((acc, curr) => acc * curr)
 }
 
-smallestCommons([1, 5])
-// console.assert(smallestCommons([5, 1]) === 60)
-// console.assert(smallestCommons([2, 10]) === 2520)
-// console.assert(smallestCommons([1, 13]) === 360360)
-// console.assert(smallestCommons([23, 18]) === 6056820)
+console.assert(smallestCommons([5, 1]) === 60)
+console.assert(smallestCommons([2, 10]) === 2520)
+console.assert(smallestCommons([1, 13]) === 360360)
+console.assert(smallestCommons([23, 18]) === 6056820)
+
+function removeFirstInstances (factors, arr, commons = []) {
+  let clean = arr.slice()
+  factors.forEach(factor => {
+    commons.push(factor)
+    clean = clean.map(items => removeFirstInstance(factor, items))
+  })
+  return [clean, commons]
+}
+
+function removeFirstInstance (elt, arr) {
+  const cleaned = arr.slice()
+  const ind = arr.findIndex(x => x === elt)
+  if (ind > -1) {
+    cleaned.splice(ind, 1)
+  }
+  return cleaned
+}
 
 function primeFactors (val = 1, primes = []) {
   return primes.reduce(([rest, factors], currPrime) => {
@@ -33,8 +57,6 @@ function primeFactors (val = 1, primes = []) {
     return [newRest, newFactors]
   }
 }
-
-console.log(primeFactors(12, [2, 3, 5, 7, 9, 11]))
 
 function listPrimes (val) {
   return range(val, nextPrime)
