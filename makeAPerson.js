@@ -45,7 +45,6 @@ var bob = new Person('Bob Ross')
 bob.getFullName() // ?
 bob.getFirstName() // ?
 bob.setFirstName('harvey')
-Object.keys(bob).length // ?
 
 /**
 Object.keys(bob).length should return 6.
